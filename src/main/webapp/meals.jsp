@@ -17,8 +17,13 @@
                 <th><c:out value="${mealTo.dateTime.toLocalDate()} ${mealTo.dateTime.toLocalTime()}"/></th>
                 <th><c:out value="${mealTo.description}"/></th>
                 <th><c:out value="${mealTo.calories}"/></th>
+                <th><a href="meals?action=edit&id=${mealTo.id}">Редактировать</a></th>
+                <th><a href="meals?action=delete&id=${mealTo.id}"> Удалить</a></th>
             </tr>
         </c:forEach>
     </table>
+    <form action="editMeal.jsp">
+        <button>Добавить блюдо</button>
+    </form>
 </body>
 </html>
