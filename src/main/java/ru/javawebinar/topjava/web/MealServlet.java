@@ -22,22 +22,24 @@ public class MealServlet extends HttpServlet {
     private MealDAO mealDAO = new MealDAOMemory();
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         log.debug("redirect to meals");
-        String action = request.getParameter("action");
+        String action = req.getParameter("action");
         if (action != null && action.equalsIgnoreCase("delete")) {
-            int id = Integer.parseInt(request.getParameter("id"));
+            int id = Integer.parseInt(req.getParameter("id"));
             log.debug("Delete meal with id = " + mealDAO.get(id).getId());
             mealDAO.delete(id);
+            resp.sendRedirect("meals");
         } else if (action != null && action.equalsIgnoreCase("edit")) {
-            int id = Integer.parseInt(request.getParameter("id"));
+            int id = Integer.parseInt(req.getParameter("id"));
             log.debug("redirect to editMeal, meal with id = " + mealDAO.get(id).getId());
-            request.setAttribute("table", mealDAO.get(id));
-            request.getRequestDispatcher("editMeal.jsp").forward(request, response);
+            req.setAttribute("table", mealDAO.get(id));
+            req.getRequestDispatcher("editMeal.jsp").forward(req, resp);
+        } else {
+            req.setAttribute("table", MealsUtil.getFilteredWithExcess(mealDAO.getList(), LocalTime.MIN, LocalTime.MAX, 2000));
+            req.getRequestDispatcher("meals.jsp").forward(req, resp);
         }
 
-        request.setAttribute("table", MealsUtil.getFilteredWithExcess(mealDAO.getList(), LocalTime.MIN, LocalTime.MAX, 2000));
-        request.getRequestDispatcher("meals.jsp").forward(request, response);
     }
 
     @Override
@@ -52,9 +54,7 @@ public class MealServlet extends HttpServlet {
             mealDAO.add(meal);
             log.debug("Add meal with id = " + meal.getId());
         } else {
-            int anInt = Integer.parseInt(id);
-            Meal meal = new Meal(anInt, dateTime, description, calories);
-            mealDAO.delete(anInt);
+            Meal meal = new Meal(Integer.parseInt(id), dateTime, description, calories);
             mealDAO.add(meal);
             log.debug("Edit meal with id = " + meal.getId());
         }

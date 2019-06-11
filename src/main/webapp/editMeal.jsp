@@ -18,12 +18,7 @@
         <th><input type="datetime-local" name="dateTime" value="<c:out value="${meal.dateTime}" />" /></th>
         <th><input type="text" name="description" value="<c:out value="${meal.description}" />" /></th>
         <th><input type="text" name="calories" value="<c:out value="${meal.calories}"/> "/></th>
-        <c:if test="${!empty meal.id}">
-            <th><input type="submit" value="Подтвердить изменения"></th>
-        </c:if>
-        <c:if test="${empty meal.id}">
-            <th><input type="submit" value="Добавить блюдо"></th>
-        </c:if>
+        <th><input type="submit" value="${empty meal.id ? "Добавить блюдо" : "Подтвердить изменения"}"></th>
     </tr>
 </table>
 </form>
