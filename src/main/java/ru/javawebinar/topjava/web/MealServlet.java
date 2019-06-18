@@ -6,7 +6,6 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.DateTimeUtil;
-import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletConfig;
@@ -47,11 +46,15 @@ public class MealServlet extends HttpServlet {
                     Integer.parseInt(request.getParameter("calories")));
 
             log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
-            mealRestController.create(meal);
+            if (meal.isNew()) {
+                mealRestController.create(meal);
+            } else {
+                mealRestController.update(meal, meal.getId());
+            }
             response.sendRedirect("meals");
         } else if ("filter".equals(action)) {
             LocalDate startDate = DateTimeUtil.parseDate(request.getParameter("startDate"));
-            LocalDate endDate = DateTimeUtil.parseDate(request.getParameter("startDate"));
+            LocalDate endDate = DateTimeUtil.parseDate(request.getParameter("endDate"));
             LocalTime startTime = DateTimeUtil.parseTime(request.getParameter("startTime"));
             LocalTime endTime = DateTimeUtil.parseTime(request.getParameter("endTime"));
             request.setAttribute("meals",mealRestController.getBetween(startDate, startTime, endDate, endTime));
@@ -82,8 +85,7 @@ public class MealServlet extends HttpServlet {
             case "all":
             default:
                 log.info("getAll");
-                request.setAttribute("meals",
-                        MealsUtil.getWithExcess(mealRestController.getAll(), MealsUtil.DEFAULT_CALORIES_PER_DAY));
+                request.setAttribute("meals", mealRestController.getAll());
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;
         }

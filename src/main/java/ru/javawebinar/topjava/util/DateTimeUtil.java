@@ -17,14 +17,10 @@ public class DateTimeUtil {
     }
 
     public static LocalDate parseDate(String data) {
-        if (data.length() < 2) {
-            return null;
-        } else return LocalDate.parse(data);
+        return data.isEmpty() ? null : LocalDate.parse(data);
     }
 
     public static LocalTime parseTime(String data) {
-        if (data.length() < 2) {
-            return null;
-        } else return LocalTime.parse(data);
+        return data.isEmpty() ? null : LocalTime.parse(data);
     }
 }

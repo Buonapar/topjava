@@ -11,10 +11,11 @@ import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.Collection;
 import java.util.List;
+
+import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 
 @Controller
 public class MealRestController {
@@ -28,7 +29,7 @@ public class MealRestController {
         this.service = service;
     }
 
-    public Collection<Meal> getAll() {
+    public List<MealTo> getAll() {
         int userId = SecurityUtil.authUserId();
         log.info("getAll");
         return service.getAll(userId);
@@ -42,6 +43,7 @@ public class MealRestController {
 
     public Meal create(Meal meal) {
         int userId = SecurityUtil.authUserId();
+        checkNew(meal);
         log.info("create {}", meal);
         return service.create(meal, userId);
     }
@@ -54,6 +56,7 @@ public class MealRestController {
 
     public void update(Meal meal, int id) {
         int userId = SecurityUtil.authUserId();
+        assureIdConsistent(meal, id);
         log.info("update {} with id={}", meal, id);
         meal.setId(id);
         service.update(meal, userId);
@@ -62,8 +65,8 @@ public class MealRestController {
     public List<MealTo> getBetween(LocalDate startDate, LocalTime startTime, LocalDate endDate, LocalTime endTime) {
         return MealsUtil.getFilteredWithExcess(
                             service.getBetween(
-                                    startDate != null ? LocalDateTime.of(startDate, LocalTime.MIN) : LocalDateTime.of(LocalDate.MIN, LocalTime.MIN),
-                                    endDate != null ? LocalDateTime.of(endDate, LocalTime.MAX) : LocalDateTime.of(LocalDate.MAX, LocalTime.MAX),
+                                    startDate != null ? startDate : LocalDate.MIN,
+                                    endDate != null ? endDate : LocalDate.MAX,
                                     SecurityUtil.authUserId()),
                             SecurityUtil.authUserCaloriesPerDay(),
                             startTime != null ? startTime : LocalTime.MIN,

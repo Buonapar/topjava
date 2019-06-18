@@ -4,10 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
+import ru.javawebinar.topjava.web.SecurityUtil;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
@@ -42,12 +46,12 @@ public class MealServiceImpl implements MealService {
     }
 
     @Override
-    public Collection<Meal> getAll(int userId) {
-        return repository.getAll(userId);
+    public List<MealTo> getAll(int userId) {
+        return MealsUtil.getWithExcess(repository.getAll(userId), SecurityUtil.authUserCaloriesPerDay());
     }
 
     @Override
-    public Collection<Meal> getBetween(LocalDateTime startTime, LocalDateTime endTime, int userId) {
+    public Collection<Meal> getBetween(LocalDate startTime, LocalDate endTime, int userId) {
         return repository.getBetween(startTime, endTime, userId);
     }
 }
